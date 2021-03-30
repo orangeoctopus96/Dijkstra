@@ -483,36 +483,46 @@ void execution (Graph g)
 // the real density
   cout << "Edges Numbers: " << g.E() << " (density: " << density << "%)" << endl;
 
-// the whole graph
-  cout << "Graph: " << endl;
+// the edges 
+  cout << "Edges are: " << endl;
   g.display();
 
-// Display the shortest path
-  int reachVert=0, TotalPath=0, AvgPath=0;
-  ShortestPath sp(g);
-  for (list<int>::iterator i=ver.begin(); i != ver.end(); ++i) 
+// the shortest path
+  int CompletionPath=0, TotalLength=0, AvgLength=0;
+  ShortestPath shortestpath(g);
+  for (list<int>::iterator i=++ver.begin(); i != ver.end(); ++i) 
   {
     int src = ver.front();
     int dst = (*i);
-    list<int> p = sp.path(src,dst);
-    int ps = sp.path_size(src,dst);
+    list<int> p = shortestpath.path(src,dst);
+    int ps = shortestpath.path_size(src,dst);
     if (ps != DEADBEEF)
-      cout << "ShortestPath (" << src << " to " << dst << "): " << ps << " -> " << p << endl;
+    {
+      cout << "From Node" << src << " to Node " << dst << ":    " << "Distance between is " << ps << ".    Route is ";
+      for(list<int>::iterator i=p.begin(); i != p.end(); ++i)
+        if (i != p.begin())
+          cout << " -> " << *i;
+        else
+          cout << *i;
+      cout << endl;
+    }
     else
-      cout << "ShortestPath (" << src << " to " << dst << "): " << "** UNREACHABLE **" << endl;      
+      cout << "From Node" << src << " to Node " << dst << ": " << "No Path" << endl;      
     if (ps!=DEADBEEF)
     {
-      reachVert++;		// Sum up reached nodes 
-      TotalPath += ps;	// Sum up shortest paths found
+      CompletionPath++;		// Sum up reached nodes 
+      TotalLength += ps;	// Sum up shortest paths found
     }
   }  
 
-  // Calculate average shortest path and print it out
-  if (reachVert!=0)
-    AvgPath = TotalPath / reachVert;	
+  // average path length
+  if (CompletionPath!=0)
+    AvgLength = TotalLength / CompletionPath;	
   else
-    AvgPath = 0;
-  cout << endl << "AVG ShortestPath Size (reachVert: " << reachVert << " - TotalPath: " << TotalPath << "): " << AvgPath << endl;
+    AvgLength = 0;
+  cout << endl;
+  cout << "Total " << CompletionPath << " paths has been calculated. " << "Total path lengths are " << TotalLength << endl;
+  cout << "Average path length is " << AvgLength << endl;
 
 }
 
@@ -524,8 +534,8 @@ int main()
   execution(g1);
 
   // 50 nodes, 40% density, 1 min path, 10 max path
-  Graph g2(50, 0.4, 1, 10);
-  execution(g2);
+//  Graph g2(50, 0.4, 1, 10);
+//  execution(g2);
   
   return 0;  
 }
