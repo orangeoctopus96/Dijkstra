@@ -1,17 +1,15 @@
 #include<iostream>
-#include<vector>
-#include<list>
-#include<map>
 #include<ctime>
 #include<cstdlib>
+#include<list>
 using namespace std;
 
-// DEADBEEF is used to represent the edge between two nodes doesn't exist 
+// DEADBEEF means no edge between two nodes 
 const int DEADBEEF=9999;
 
 // Node definitions
-typedef struct Nodeinfo Node;
-struct Nodeinfo
+typedef struct NodeInfo Node;
+struct NodeInfo
 {
   int number;	
   int weight;	
@@ -248,29 +246,21 @@ void Graph::display()
 }
 
 
-// NodeInfo Definitions
-struct strNodeInfo
+// Path info for node
+struct NodePathInfo
 {
-  int NodeNum;	// Node Number
-  int ShortPath;		// Shortest path found to the Node
-  int through;		// Node that precede Node Number in the shortest path
+  int NodeNum;      // Node Number
+  int ShortPath;    // Shortest path found to the Node
+  int through;      // Node that precede Node Number in the shortest path
 };
-typedef struct strNodeInfo NodeInfo;
+typedef struct NodePathInfo NodePath;
 
-// Compare NodeInfo by NodeNum
-bool compareNodeNum(NodeInfo& N1, NodeInfo& N2)
-{
-  if (N1.NodeNum < N2.NodeNum) return true;
-  return false;
-}
-
-// Compare NodeInfo by ShortPath
-bool compareShortPath(NodeInfo& N1, NodeInfo& N2)
+// compare ShortPath for NodePath
+bool compareShortPath(NodePath& N1, NodePath& N2)
 {
   if (N1.ShortPath < N2.ShortPath) return true;
   return false;
 }
-
 
 // Class PriorityQueue
 // The value of the PriorityQueue is to always have access to the vertex with the 
@@ -278,78 +268,78 @@ bool compareShortPath(NodeInfo& N1, NodeInfo& N2)
 class PriorityQueue {
   public:
     PriorityQueue();
-    void chgPriority(NodeInfo n);
+    void chgPriority(NodePath n);
     void minPriority();
-    bool contains(NodeInfo element);
-    bool Shorter(NodeInfo n);
-    void insert(NodeInfo element);
-    NodeInfo top();
+    bool contains(NodePath element);
+    bool shorter(NodePath n);
+    void insert(NodePath element);
+    NodePath top();
     int size();
     
   private:
-    list<NodeInfo> pq;
+    list<NodePath> pqueue;
 };
 
 // Constructor of PriorityQueue Class
 // Creates an empty list of nodes
 PriorityQueue::PriorityQueue()
 {
-  pq.clear();
+  pqueue.clear();
 }
 
 // changes the priority (node value) of queue element
-void PriorityQueue::chgPriority(NodeInfo n)
+void PriorityQueue::chgPriority(NodePath n)
 {
-  for(list<NodeInfo>::iterator i=pq.begin(); i!=pq.end(); ++i)
+  for(list<NodePath>::iterator i=pqueue.begin(); i!=pqueue.end(); ++i)
     if ((*i).NodeNum == n.NodeNum)
     {
       (*i).ShortPath = n.ShortPath;
       (*i).through = n.through;
     }
-  pq.sort(compareShortPath);
+  pqueue.sort(compareShortPath);
 }
 
 // removes the top element of the queue 
 void PriorityQueue::minPriority()
 {
-  if (! pq.empty())
+  if (! pqueue.empty())
   {
-    pq.pop_front();
+    pqueue.pop_front();
   }
 }
 
 // does the queue contain element
-bool PriorityQueue::contains(NodeInfo element)
+bool PriorityQueue::contains(NodePath element)
 {
-  for(list<NodeInfo>::iterator i=pq.begin(); i!=pq.end(); ++i)
+  for(list<NodePath>::iterator i=pqueue.begin(); i!=pqueue.end(); ++i)
     if ((*i).NodeNum == element.NodeNum)
       return true;
   return false;
 }
 
 // check if node 'n' has a shorter path than the node with the same number in the queue
-bool PriorityQueue::Shorter(NodeInfo n)
+bool PriorityQueue::shorter(NodePath n)
 {
-  for(list<NodeInfo>::iterator i=pq.begin(); i!=pq.end(); ++i)
+  for(list<NodePath>::iterator i=pqueue.begin(); i!=pqueue.end(); ++i)
     if ((*i).NodeNum == n.NodeNum)
       if ((*i).ShortPath > n.ShortPath) return true;
   return false;
 }
 
 // insert element into queue
-void PriorityQueue::insert(NodeInfo element)
+void PriorityQueue::insert(NodePath element)
 {
-  pq.push_back(element);
-  pq.sort(compareShortPath);
+  pqueue.push_back(element);
+  pqueue.sort(compareShortPath);
 }
 
 // returns the top element of the queue
-NodeInfo PriorityQueue::top()
+NodePath PriorityQueue::top()
 {
-  NodeInfo n = {' ',0};
-  if (! pq.empty())
+  NodePath n = {' ',0};
+  if (! pqueue.empty())
   {
-    list<NodeInfo>::iterator i=pq.begin();
+    list<NodePath>::iterator i=pqueue.begin();
     n.NodeNum = (*i).NodeNum;
     n.ShortPath = (*i).ShortPath;
     n.through = (*i).through;
@@ -360,9 +350,8 @@ NodeInfo PriorityQueue::top()
 // Return the number of elements
 int PriorityQueue::size()
 {
-  return pq.size();
+  return pqueue.size();
 }
-
 
 // ShortestPath Class
 // Implements the mechanics of Dijkstra’s algorithm
@@ -392,52 +381,52 @@ ShortestPath::ShortestPath(Graph g)
 // find shortest path between u-w and returns the sequence of vertices representing shorest path u-v1-v2-…-vn-w.
 list<int> ShortestPath::path(int u, int w)
 {
-  // Initialization
-  list<int> candidates = graph.vertices();
-  list<int> desiredPath;
-  list<NodeInfo> minPaths;
-  PriorityQueue p;
-  NodeInfo lastSelected, n;
+  list<int> points = graph.vertices();
+  list<NodePath> pathway;
 
-  // Calculate shortest path from 'u' to 'w' (Dijkstra's Algorithm)
-  candidates.remove(u);			// Remove 'u' from candidates list
-  lastSelected.NodeNum = u;		// Set 'u' as lastSelected
-  lastSelected.ShortPath = 0;
-  lastSelected.through = u;
-  minPaths.push_back(lastSelected);	// Add 'u' to minPath list
+  // use Dijkstra's Algorithm to calculate shortest path from 'u' to 'w'
+  NodePath currentmini;
+  currentmini.NodeNum = u;        // set 'u' as currentmini because now the minimum is 0
+  currentmini.ShortPath = 0;      // set shortest path 0 because 'u' to 'u' is 0
+  currentmini.through = u;
+  pathway.push_back(currentmini); // add 'u' to pathway list as the start
+  points.remove(u);               // remove 'u' because it's the start point
 
-  while ((!candidates.empty()) && (lastSelected.NodeNum !=w))
+  NodePath cursor;                // it's like cursor to find next node
+  PriorityQueue queue;            // it's a queue contains info between different nodes to 'u'
+  while ((!points.empty()) && (currentmini.NodeNum !=w))
   {
-    // For each node in candidate list calculate the cost to reach that candidate through lastSelected 
-    for(list<int>::iterator i=candidates.begin(); i != candidates.end(); ++i)
+    // from currentmini to other points in the list, check the distance
+    for(list<int>::iterator i = points.begin(); i != points.end(); ++i)
     {
-      n.NodeNum=*i;
-      n.ShortPath=lastSelected.ShortPath + graph.get_edge_value(lastSelected.NodeNum,*i);
-      n.through=lastSelected.NodeNum;
-      if (!p.contains(n))	// Add candidate to priority queue if doesn't exist 
-        p.insert(n);
-      else if (p.Shorter(n))	// Update candidate ShortPath in priority queue if a better path was found
-        p.chgPriority(n);
+      cursor.NodeNum = *i;
+      cursor.ShortPath = currentmini.ShortPath + graph.get_edge_value(currentmini.NodeNum, *i);
+      cursor.through = currentmini.NodeNum;
+      if (!queue.contains(cursor))      // add point to queue if not there
+        queue.insert(cursor);
+      else if (queue.shorter(cursor))   // update queue point if the route now is shorter
+        queue.chgPriority(cursor);
     }
-    lastSelected = p.top();			// Select the candidate with ShortPath from priority queue
-    p.minPriority();				// Remove it from the priority queue
-    minPaths.push_back(lastSelected);		// Add the candidate with min distance to minPath list
-    candidates.remove(lastSelected.NodeNum);	// Remove it from candidates list
+    currentmini = queue.top();          // from the queue, select the current minimum path point
+    queue.minPriority();                // remove it from the queue
+    pathway.push_back(currentmini);     // add the current minimum distance point to pathway list
+    points.remove(currentmini.NodeNum); // remove it from points list
   }
   
-  // Go backward from 'w' to 'u' adding nodes in that path to desiredPath list
-  lastSelected=minPaths.back();
-  desiredPath.push_front(lastSelected.NodeNum);
-  while(lastSelected.NodeNum!=u)
+  // adding nodes from 'w' to 'u' to route list
+  list<int> route;
+  currentmini=pathway.back();
+  route.push_front(currentmini.NodeNum);
+  while(currentmini.NodeNum!=u)
   {
-    for(list<NodeInfo>::iterator i=minPaths.begin(); i != minPaths.end(); ++i)
-      if ((*i).NodeNum==lastSelected.through)
+    for(list<NodePath>::iterator i=pathway.begin(); i != pathway.end(); ++i)
+      if ((*i).NodeNum==currentmini.through)
       {
-        lastSelected=(*i);
-        desiredPath.push_front(lastSelected.NodeNum);
+        currentmini=(*i);
+        route.push_front(currentmini.NodeNum);
       }
   }
-  return desiredPath;
+  return route;
 }
 
 // return the path cost associated with the shortest path
@@ -459,28 +448,21 @@ int ShortestPath::path_size(int u, int w)
   return PathCost; 
 }
 
-// Overload operator << to print list<int> variables
-ostream &operator<<(ostream &output, list<int> L)
-{
-   for(list<int>::iterator i=L.begin(); i != L.end(); ++i)
-     output << *i << " ";
-   return output;
-}
-
 void execution (Graph g)
 {
-  double density = static_cast<double>(g.E())/((static_cast<double>(g.V())*static_cast<double>(g.V())-1)/2)*100;	// calculate real density
 // how many vertices
   cout << "Vertices Numbers: " << g.V() << endl;
 
 // what are vertices
   list<int> ver = g.vertices();
   cout << "Vertices are: ";
-  for(list<int>::iterator i=ver.begin(); i != ver.end(); ++i)
+  for(list<int>::iterator i = ver.begin(); i != ver.end(); ++i)
     cout << *i << " ";
   cout << endl;
 
 // the real density
+  int AllPossibleEdges = g.V() * (g.V()-1) / 2; // calculate all possible edges for graph
+  double density = static_cast<double>(g.E())/static_cast<double>(AllPossibleEdges)*100;	// calculate real density
   cout << "Edges Numbers: " << g.E() << " (density: " << density << "%)" << endl;
 
 // the edges 
@@ -488,30 +470,32 @@ void execution (Graph g)
   g.display();
 
 // the shortest path
-  int CompletionPath=0, TotalLength=0, AvgLength=0;
+  int CompletionPath=0;
+  int TotalLength=0; 
+  int AvgLength=0;
   ShortestPath shortestpath(g);
   for (list<int>::iterator i=++ver.begin(); i != ver.end(); ++i) 
   {
-    int src = ver.front();
-    int dst = (*i);
-    list<int> p = shortestpath.path(src,dst);
-    int ps = shortestpath.path_size(src,dst);
-    if (ps != DEADBEEF)
+    int start = ver.front();
+    int destination = (*i);
+    list<int> route = shortestpath.path(start,destination);
+    int length = shortestpath.path_size(start,destination);
+    if (length != DEADBEEF)
     {
-      cout << "From Node" << src << " to Node " << dst << ":    " << "Distance between is " << ps << ".    Route is ";
-      for(list<int>::iterator i=p.begin(); i != p.end(); ++i)
-        if (i != p.begin())
+      cout << "From Node" << start << " to Node " << destination << ":    " << "Distance between is " << length << ".    Route is ";
+      for(list<int>::iterator i = route.begin(); i != route.end(); ++i)
+        if (i != route.begin())
           cout << " -> " << *i;
         else
           cout << *i;
       cout << endl;
     }
     else
-      cout << "From Node" << src << " to Node " << dst << ": " << "No Path" << endl;      
-    if (ps!=DEADBEEF)
+      cout << "From Node" << start << " to Node " << destination << ": " << "No Path" << endl;      
+    if (length!=DEADBEEF)
     {
       CompletionPath++;		// Sum up reached nodes 
-      TotalLength += ps;	// Sum up shortest paths found
+      TotalLength = TotalLength + length;	// Sum up shortest paths found
     }
   }  
 
@@ -521,7 +505,8 @@ void execution (Graph g)
   else
     AvgLength = 0;
   cout << endl;
-  cout << "Total " << CompletionPath << " paths has been calculated. " << "Total path lengths are " << TotalLength << endl;
+  cout << "Total " << CompletionPath << " paths has been calculated. " << endl;
+  cout << "Total path lengths are " << TotalLength << endl;
   cout << "Average path length is " << AvgLength << endl;
 
 }
