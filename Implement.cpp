@@ -5,7 +5,7 @@
 using namespace std;
 
 // DEADBEEF means no edge between two nodes 
-const int DEADBEEF=9999;
+const int DEADBEEF = 9999;
 
 // Node definitions
 typedef struct NodeInfo Node;
@@ -53,7 +53,7 @@ Graph::Graph(int Numbers, double density, int min, int max)
   EdgesNum = 0;
   AdjMatrix.clear();
 
-  for(int i=0; i<VerticesNum; ++i)
+  for(int i = 0; i < VerticesNum; ++i)
   {
     Node NewNode;
     NewNode.number = i;
@@ -62,9 +62,9 @@ Graph::Graph(int Numbers, double density, int min, int max)
     AdjMatrix.push_back(NewNode);
   }
   srand(time(0));
-  for (int i=0; i<VerticesNum; ++i)
+  for (int i = 0; i < VerticesNum; ++i)
   {
-    for (int j=i+1; j<VerticesNum; ++j)
+    for (int j = i+1; j < VerticesNum; ++j)
     {
       double prob = (rand() % 100) / 100.0;
       if (prob < density)
@@ -77,16 +77,15 @@ Graph::Graph(int Numbers, double density, int min, int max)
 }
 
 
-// returns the value associated to the edge (x,y)
-// returns INFINITY if edge doesn't exist
+// returns the value associated to the edge (x,y), DEADBEEF means edge doesn't exist
 int Graph::get_edge_value(int x, int y)
 {
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
   {
-    if ((*i).number==x)
-      for(list<Node>::iterator j=(*i).edges.begin(); j != (*i).edges.end(); ++j)
+    if ((*i).number == x)
+      for(list<Node>::iterator j = (*i).edges.begin(); j != (*i).edges.end(); ++j)
       {
-        if ((*j).number==y)
+        if ((*j).number == y)
         return (*j).weight; 
       }
   }
@@ -96,22 +95,22 @@ int Graph::get_edge_value(int x, int y)
 // sets the value associated to the edge (x,y) to value
 void Graph::set_edge_value(int x, int y, int value)
 {
-  bool found;
+  bool find;
   // for the matrix [x,y]
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
   {
-    if ((*i).number==x)
+    if ((*i).number == x)
     {
-      found = false;
-      for(list<Node>::iterator j=(*i).edges.begin(); j != (*i).edges.end(); ++j)
+      find = false;
+      for(list<Node>::iterator j = (*i).edges.begin(); j != (*i).edges.end(); ++j)
       {
-        if ((*j).number==y)
+        if ((*j).number == y)
         {  
-          (*j).weight=value;
-          found = true;
+          (*j).weight = value;
+          find = true;
         }
       }
-      if (!found)
+      if (!find)
       {
         Node NewNode;
         NewNode.number = y;
@@ -123,20 +122,20 @@ void Graph::set_edge_value(int x, int y, int value)
   }
 
   // for the matrix [y,x]
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
   {
-    if ((*i).number==y)
+    if ((*i).number == y)
     {
-      found = false;
-      for(list<Node>::iterator j=(*i).edges.begin(); j != (*i).edges.end(); ++j)
+      find = false;
+      for(list<Node>::iterator j = (*i).edges.begin(); j != (*i).edges.end(); ++j)
       {
-        if ((*j).number==x)
+        if ((*j).number == x)
         {  
-          (*j).weight=value;
-          found = true;
+          (*j).weight = value;
+          find = true;
         }
       }
-      if (!found)
+      if (!find)
       {
         Node NewNode;
         NewNode.number = x;
@@ -152,13 +151,13 @@ void Graph::set_edge_value(int x, int y, int value)
 // tests whether there is an edge from node x to node y
 bool Graph::adjacent(int x, int y)
 {
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
   {
-    if ((*i).number==x)
+    if ((*i).number == x)
     {
-      for(list<Node>::iterator j=(*i).edges.begin(); j != (*i).edges.end(); ++j)
+      for(list<Node>::iterator j = (*i).edges.begin(); j != (*i).edges.end(); ++j)
       {
-        if ((*j).number==y)
+        if ((*j).number == y)
         {  
           return true;
         }
@@ -172,11 +171,11 @@ bool Graph::adjacent(int x, int y)
 list<int> Graph::neighbors(int x)
 {
   list<int> AdjNodes;
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
   {
-    if ((*i).number==x)
+    if ((*i).number == x)
     {
-      for(list<Node>::iterator j=(*i).edges.begin(); j != (*i).edges.end(); ++j)
+      for(list<Node>::iterator j = (*i).edges.begin(); j != (*i).edges.end(); ++j)
       {
         AdjNodes.push_back((*j).number);
       }
@@ -200,35 +199,35 @@ int Graph::E()
 // returns a list contains all vertices in the Graph
 list<int> Graph::vertices()
 {
-  list<int> nodes;
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  list<int> AllVertices;
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
   {
-    nodes.push_back((*i).number);
+    AllVertices.push_back((*i).number);
   }
-  return nodes;
+  return AllVertices;
 }
 
 // Display the Graph
 void Graph::display()
 {
   cout << "   ";
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
     if ((*i).number < 10) 
       cout << " " << "0" << (*i).number;
     else
       cout << " " << (*i).number;
   cout << endl;
-  for(list<Node>::iterator i=AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
+  for(list<Node>::iterator i = AdjMatrix.begin(); i != AdjMatrix.end(); ++i)
   {
     if ((*i).number < 10) 
       cout << " " << "0" << (*i).number;
     else
       cout << " " << (*i).number;
-    int position=0; // display point now
-    for(list<Node>::iterator j=(*i).edges.begin(); j != (*i).edges.end(); ++j)
+    int position = 0; // display point now
+    for(list<Node>::iterator j = (*i).edges.begin(); j != (*i).edges.end(); ++j)
     {
       int shift=(*j).number - position; // width between display point now and display node now
-      for(int h=0; h<shift; ++h)
+      for(int h = 0; h<shift; ++h)
       {
         cout << " --";
         position++;
@@ -290,7 +289,7 @@ PriorityQueue::PriorityQueue()
 // changes the priority (node value) of queue element
 void PriorityQueue::chgPriority(NodePath n)
 {
-  for(list<NodePath>::iterator i=pqueue.begin(); i!=pqueue.end(); ++i)
+  for(list<NodePath>::iterator i = pqueue.begin(); i!=pqueue.end(); ++i)
     if ((*i).NodeNum == n.NodeNum)
     {
       (*i).ShortPath = n.ShortPath;
@@ -311,7 +310,7 @@ void PriorityQueue::minPriority()
 // does the queue contain element
 bool PriorityQueue::contains(NodePath element)
 {
-  for(list<NodePath>::iterator i=pqueue.begin(); i!=pqueue.end(); ++i)
+  for(list<NodePath>::iterator i = pqueue.begin(); i!=pqueue.end(); ++i)
     if ((*i).NodeNum == element.NodeNum)
       return true;
   return false;
@@ -320,7 +319,7 @@ bool PriorityQueue::contains(NodePath element)
 // check if node 'n' has a shorter path than the node with the same number in the queue
 bool PriorityQueue::shorter(NodePath n)
 {
-  for(list<NodePath>::iterator i=pqueue.begin(); i!=pqueue.end(); ++i)
+  for(list<NodePath>::iterator i = pqueue.begin(); i!=pqueue.end(); ++i)
     if ((*i).NodeNum == n.NodeNum)
       if ((*i).ShortPath > n.ShortPath) return true;
   return false;
@@ -336,15 +335,15 @@ void PriorityQueue::insert(NodePath element)
 // returns the top element of the queue
 NodePath PriorityQueue::top()
 {
-  NodePath n = {' ',0};
+  NodePath element = {' ',0};
   if (! pqueue.empty())
   {
-    list<NodePath>::iterator i=pqueue.begin();
-    n.NodeNum = (*i).NodeNum;
-    n.ShortPath = (*i).ShortPath;
-    n.through = (*i).through;
+    list<NodePath>::iterator i = pqueue.begin();
+    element.NodeNum = (*i).NodeNum;
+    element.ShortPath = (*i).ShortPath;
+    element.through = (*i).through;
   }
-  return n;
+  return element;
 }
 
 // Return the number of elements
@@ -394,7 +393,7 @@ list<int> ShortestPath::path(int u, int w)
 
   NodePath cursor;                // it's like cursor to find next node
   PriorityQueue queue;            // it's a queue contains info between different nodes to 'u'
-  while ((!points.empty()) && (currentmini.NodeNum !=w))
+  while ((!points.empty()) && (currentmini.NodeNum != w))
   {
     // from currentmini to other points in the list, check the distance
     for(list<int>::iterator i = points.begin(); i != points.end(); ++i)
@@ -413,16 +412,16 @@ list<int> ShortestPath::path(int u, int w)
     points.remove(currentmini.NodeNum); // remove it from points list
   }
   
-  // adding nodes from 'w' to 'u' to route list
+  // adding passing nodes from 'w' to 'u' to route list
   list<int> route;
-  currentmini=pathway.back();
+  currentmini = pathway.back();
   route.push_front(currentmini.NodeNum);
-  while(currentmini.NodeNum!=u)
+  while(currentmini.NodeNum != u)
   {
-    for(list<NodePath>::iterator i=pathway.begin(); i != pathway.end(); ++i)
-      if ((*i).NodeNum==currentmini.through)
+    for(list<NodePath>::iterator i = pathway.begin(); i != pathway.end(); ++i)
+      if ((*i).NodeNum == currentmini.through)
       {
-        currentmini=(*i);
+        currentmini = (*i);
         route.push_front(currentmini.NodeNum);
       }
   }
@@ -432,15 +431,15 @@ list<int> ShortestPath::path(int u, int w)
 // return the path cost associated with the shortest path
 int ShortestPath::path_size(int u, int w)
 {
-  int PathCost=0;
-  int CurrentNode=0;
-  list<int> NodePath;
+  int PathCost = 0;
+  int CurrentNode = 0;
+  list<int> PathRoute;
   
-  // Calculate the shortest path from 'u' to 'w' and then sum up edge weights in this path
-  NodePath = path(u,w);
-  CurrentNode=NodePath.front();
-  NodePath.pop_front();
-  for(list<int>::iterator i=NodePath.begin(); i!=NodePath.end(); ++i)
+  // calculate the cost of shortest path from 'u' to 'w'
+  PathRoute = path(u,w);
+  CurrentNode = PathRoute.front();
+  PathRoute.pop_front();
+  for(list<int>::iterator i = PathRoute.begin(); i != PathRoute.end(); ++i)
   {
     PathCost = PathCost + graph.get_edge_value(CurrentNode,(*i));
     CurrentNode = (*i);
@@ -448,6 +447,7 @@ int ShortestPath::path_size(int u, int w)
   return PathCost; 
 }
 
+// find the shortest paths
 void execution (Graph g)
 {
 // how many vertices
@@ -463,18 +463,19 @@ void execution (Graph g)
 // the real density
   int AllPossibleEdges = g.V() * (g.V()-1) / 2; // calculate all possible edges for graph
   double density = static_cast<double>(g.E())/static_cast<double>(AllPossibleEdges)*100;	// calculate real density
-  cout << "Edges Numbers: " << g.E() << " (density: " << density << "%)" << endl;
+  cout << "Edges Numbers: " << g.E() << endl;
+  cout << "Real Density: " << density << "%" << endl;
 
 // the edges 
   cout << "Edges are: " << endl;
   g.display();
 
 // the shortest path
-  int CompletionPath=0;
-  int TotalLength=0; 
-  int AvgLength=0;
+  int CompletionPath = 0;
+  int TotalLength = 0; 
+  int AvgLength = 0;
   ShortestPath shortestpath(g);
-  for (list<int>::iterator i=++ver.begin(); i != ver.end(); ++i) 
+  for (list<int>::iterator i = ++ver.begin(); i != ver.end(); ++i) 
   {
     int start = ver.front();
     int destination = (*i);
@@ -492,7 +493,7 @@ void execution (Graph g)
     }
     else
       cout << "From Node" << start << " to Node " << destination << ": " << "No Path" << endl;      
-    if (length!=DEADBEEF)
+    if (length != DEADBEEF)
     {
       CompletionPath++;		// Sum up reached nodes 
       TotalLength = TotalLength + length;	// Sum up shortest paths found
@@ -500,7 +501,7 @@ void execution (Graph g)
   }  
 
   // average path length
-  if (CompletionPath!=0)
+  if (CompletionPath != 0)
     AvgLength = TotalLength / CompletionPath;	
   else
     AvgLength = 0;
@@ -508,10 +509,11 @@ void execution (Graph g)
   cout << "Total " << CompletionPath << " paths has been calculated. " << endl;
   cout << "Total path lengths are " << TotalLength << endl;
   cout << "Average path length is " << AvgLength << endl;
-
+  cout << "========================================================================================" << endl;
+  cout << '\n' << '\n' << '\n';
 }
 
-// main
+// main function
 int main()
 {  
   // 50 nodes, 20% density, 1 min path, 10 max path
@@ -519,8 +521,8 @@ int main()
   execution(g1);
 
   // 50 nodes, 40% density, 1 min path, 10 max path
-//  Graph g2(50, 0.4, 1, 10);
-//  execution(g2);
+  Graph g2(50, 0.4, 1, 10);
+  execution(g2);
   
   return 0;  
 }
